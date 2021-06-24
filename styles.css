@@ -1,0 +1,120 @@
+body{
+    background-color: rgb(240, 192, 174);
+}
+#numpad{
+    display: grid;
+    grid-template-columns: 80px 80px 80px 80px;
+    grid-template-rows: 80px 80px 80px 80px 80px;
+    column-gap: 10px;
+    row-gap: 10px;
+    grid-template-areas:
+    "clear sign percent operator_divide"
+    "num7 num8 num9 operator_multiply"
+    "num4 num5 num6 operator_subtract"
+    "num1 num2 num3 operator_add"
+    "num0 num0 dot_sign equal";
+
+    justify-content: center;
+}
+
+.calc_button{
+    display: flex;
+    background-color: rgb(219, 219, 219);
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;    
+    box-shadow: 2px 2px;
+
+}
+
+.operator{
+    background-color: cornflowerblue;
+}
+
+.func_button{
+    background-color: orange;
+}
+
+#equal{
+    background-color: white;
+}
+
+#dot{
+    background-color: grey;
+}
+
+#screen{
+    background-color: cadetblue;
+    height: 30vh;
+    width: auto;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px;
+    align-items: flex-end;
+}
+
+/*first row*/
+#clear_all{
+    grid-area: clear;
+
+}
+#switch_sign{
+    grid-area: sign;
+}
+#percentage{
+    grid-area: percent;
+}
+#divide{
+    grid-area: operator_divide;
+}
+/*second row*/
+#seven{
+    grid-area: num7;
+}
+#eight{
+    grid-area: num8;
+}
+#nine{
+    grid-area: num9;
+}
+#multiply{
+    grid-area: operator_multiply;
+}
+
+/*third row*/
+#four{
+    grid-area: num4;
+}
+#five{
+    grid-area: num5;
+}
+#six{
+    grid-area: num6;
+}
+#subtract{
+    grid-area: operator_subtract;
+}
+
+/*fourth row*/
+#one{
+    grid-area: num1;
+}
+#two{
+    grid-area: num2;
+}
+#three{
+    grid-area: num3;
+}
+#add{
+    grid-area: operator_add;
+}
+
+/*fifth row*/
+#zero{
+    grid-area: num0;
+}
+#dot{
+    grid-area: dot_sign;
+}
+#equal{
+    grid-area: equal;
+}
