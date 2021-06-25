@@ -154,7 +154,7 @@ const inputOperator = function(operator){
     if (calculation["operator"]){
         return;
     }
-    
+
     if (calculation["numStack"].length){
         calculation["operator"] = operator;
         calculation["numStack"].push("");
@@ -203,5 +203,8 @@ window.addEventListener('keydown', e => {
         operate();
         display();
         displayPastResults();
+    }
+    else if (e.key === "."){
+        addDot();
     }
 })
