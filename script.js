@@ -3,7 +3,7 @@ const calculation = {
     operator: "",
     result: "",
 }
-const results = [];
+let results = [];
 
 const screen = document.querySelector("#screen_result");
 const pastResultsScreen = document.querySelector("#past_results_screen");
@@ -60,13 +60,14 @@ const displayPastResults = function (){
     if (!results.length){
         return;
     }
+
     result = document.createElement("div");
     currentCalculation = results[results.length - 1];
     result.textContent = `${currentCalculation['numStack'][0]} ${currentCalculation['operator']} ${currentCalculation['numStack'][1]} = ${currentCalculation['result']}`;
     
-    if (pastResultsScreen.length > 4){
+    if (pastResultsScreen.childNodes.length >= 4){
         pastResultsScreen.removeChild(pastResultsScreen.lastChild);
-        results.splice(0, 1);
+        results.shift();
     }
 
     pastResultsScreen.insertBefore(result, pastResultsScreen.firstChild);
@@ -148,6 +149,12 @@ const inputNumber = function(digit) {
 }
 
 const inputOperator = function(operator){
+    // edge cases:
+    // operator has been entered
+    if (calculation["operator"]){
+        return;
+    }
+    
     if (calculation["numStack"].length){
         calculation["operator"] = operator;
         calculation["numStack"].push("");
@@ -165,8 +172,8 @@ operatorButtons.forEach((button) => {
 });
 
 equalButton.addEventListener('click', () => {
-    operate(calculation);
-    display(calculation);
+    operate();
+    display();
     displayPastResults();
 });
 
@@ -180,7 +187,7 @@ clearButton.addEventListener('click', () => {
 
 changeSignButton.addEventListener('click', () => {
     changeSign(calculation);
-    display(calculation);
+    display();
 })
 
 window.addEventListener('keydown', e => {
@@ -193,8 +200,8 @@ window.addEventListener('keydown', e => {
     }
 
     else if (e.key === "Enter"){
-        operate(calculation);
-        display(calculation);
+        operate();
+        display();
         displayPastResults();
     }
 })
