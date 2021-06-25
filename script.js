@@ -163,6 +163,19 @@ const inputOperator = function(operator){
     display(calculation);
 }
 
+const removeDigit = function(){
+    if (!calculation['numStack']){
+        return;
+    }
+    console.log("e")
+
+    let lastNum = calculation['numStack'][calculation['numStack'].length - 1];
+    lastNum = lastNum.slice(0, -1);
+    console.log(lastNum);
+    calculation['numStack'][calculation['numStack'].length - 1] = lastNum;
+    display();
+}
+
 numButtons.forEach((button) => {
     button.addEventListener('click', (e) => inputNumber(e.target.textContent));
 });
@@ -206,5 +219,8 @@ window.addEventListener('keydown', e => {
     }
     else if (e.key === "."){
         addDot();
+    }
+    else if (e.key === "Backspace"){
+        removeDigit();
     }
 })
