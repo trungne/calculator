@@ -51,7 +51,7 @@ body{
     margin-bottom: 20px;
     box-shadow: 2px 2px;
     
-    grid-template-columns: 98vw;
+    grid-template-columns: 97vw;
     grid-template-rows: 24vh 6vh;
     grid-template-areas:
     "past_results"
@@ -64,6 +64,7 @@ body{
 #past_results_screen{
     grid-area: past_results;
     display: flex;
+
     flex-direction: column-reverse;
     text-align: right;
 }
