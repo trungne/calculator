@@ -1,9 +1,29 @@
-let firstNum = "", secondNum = "", operator = "";
-let screen = document.querySelector("#screen");
-const operate = function (operator, a, b){
-    firstNum = parseFloat(a);
-    secondNum = parseFloat(b);
+const calculation = {
+    numStack: [],
+    operator: "",
+    result: "",
+}
+const results = [];
+
+const screen = document.querySelector("#screen_result");
+const pastResultsScreen = document.querySelector("#past_results_screen");
+const numButtons = document.querySelectorAll('.num');
+const operatorButtons = document.querySelectorAll('.operator');
+const equalButton = document.querySelector("#equal");
+const dotButton = document.querySelector("#dot");
+const clearButton = document.querySelector("#clear_all");
+const changeSignButton = document.querySelector("#change_sign");
+
+const operate = function (){
+    if (!(calculation['numStack'].length === 2) || !calculation['operator']){
+        return;
+    }
+
+    firstNum = parseFloat(calculation['numStack'][0]);
+    secondNum = parseFloat(calculation['numStack'][1]);
+    operator = calculation['operator'];
     let result;
+
     if (operator === "+"){
         result = firstNum + secondNum;
     }
@@ -14,24 +34,61 @@ const operate = function (operator, a, b){
         result = firstNum * secondNum;
     }
     else if (operator === "/"){
-        if (b == 0){
+        if (secondNum == 0){
             result = NaN;
         }
         else{
             result = firstNum / secondNum;
         }
     }
-    // TODO: fix this
-    secondNum = firstNum;
-    firstNum = result;
-    operator = "";
+    // store old calculation
+    if (!(result === NaN)){
+        // only store valid calculation
+        calculation['result'] = result.toString();
+        results.push(JSON.parse(JSON.stringify(calculation)));
+    }
+
+    // reset calcuation with first number as the previous result
+    calculation["numStack"][0] = result.toString();
+    calculation["numStack"].pop();
+    calculation["operator"] = "";
+}
+const displayPastResults = function (){
+    // display nothing if there are no past results
+    if (!results.length){
+        return;
+    }
+    result = document.createElement("div");
+    currentCalculation = results[results.length - 1];
+    result.textContent = `${currentCalculation['numStack'][0]} ${currentCalculation['operator']} ${currentCalculation['numStack'][1]} = ${currentCalculation['result']}`;
     
-    console.log(result);
-    return result.toString();
+    if (pastResultsScreen.length > 4){
+        pastResultsScreen.removeChild(pastResultsScreen.lastChild);
+        results.splice(0, 1);
+    }
+    
+    pastResultsScreen.insertBefore(result, pastResultsScreen.firstChild);
+    
+    
+
+}
+const display = function (){
+    if (calculation['numStack'][0] === NaN.toString()){
+        screen.textContent = `You can't do that, man!`;
+        calculation['numStack'] = [];
+        calculation['operator'] = "";
+    }
+    else{
+        screen.textContent = generateTextContentForCalculation(calculation);
+    }
 }
 
-const display = function (){
-    screen.textContent = `${firstNum} ${operator} ${secondNum}`;
+const generateTextContentForCalculation = function(calculation){
+    const firstNum = (calculation['numStack'][0] ? calculation['numStack'][0] : "");
+    const secondNum = (calculation['numStack'][1] ? calculation['numStack'][1] : "");
+    const operator = calculation['operator'];
+
+    return `${firstNum} ${operator} ${secondNum}`;
 }
 
 const clearDisplay = function(){
@@ -39,64 +96,89 @@ const clearDisplay = function(){
 }
 
 const addDot = function() {
+    // check if numStack is empty, if so. Simply add a dot, presenting 0.xxx
+    if (!calculation["numStack"].length){
+        calculation["numStack"].push(".");
+        display(calculation);
+        return;
+    }
 
-    if (!operator){
-        if(!firstNum.includes(".")){
-            firstNum += ".";
-        }
+    const lastIndex = calculation["numStack"].length - 1;
+    let lastNum = calculation["numStack"][lastIndex];
+    const dotIndex = lastNum.indexOf(".");
+
+    if (dotIndex === -1){ // no dot in number
+        lastNum += ".";
     }
     else{
-        if(!secondNum.includes(".")){
-            secondNum += ".";
-        }
+        lastNum = lastNum.slice(0, dotIndex) + lastNum.slice(dotIndex + 1);
     }
-    display();
+    
+    calculation["numStack"][lastIndex] = lastNum;
+    display(calculation);
 }
 
 
 const inputNumber = function(e) {
-    // if an operator has been entered, take input as firstNum
-    if (!operator){
-        firstNum += e.target.textContent;
-        console.log(firstNum);
+    // if stack is empty, create a number
+    if (!calculation["numStack"].length){
+        calculation["numStack"].push(e.target.textContent);
     }
     else{
-        secondNum += e.target.textContent;
-        console.log(secondNum);
+        const lastIndex = calculation["numStack"].length - 1;
+        calculation["numStack"][lastIndex] += e.target.textContent;
     }
-    display();
+
+    display(calculation);
 }
 
 const inputOperator = function(e){
-    operator = e.target.textContent;
-    console.log(operator);
-
-    if (firstNum && secondNum){
-        result = operate(operator, firstNum, secondNum)
+    if (calculation["numStack"].length){
+        calculation["operator"] = e.target.textContent;
+        calculation["numStack"].push("");
     }
-    display();
+
+    display(calculation);
 }
 
-const numButtons = document.querySelectorAll('.num');
 numButtons.forEach((button) => {
     button.addEventListener('click', (e) => inputNumber(e));
 });
 
-const operatorButtons = document.querySelectorAll('.operator');
 operatorButtons.forEach((button) => {
     button.addEventListener('click', e => inputOperator(e));
 });
 
-const equalButton = document.querySelector("#equal");
-equalButton.addEventListener('click', () => operate(operator, firstNum, secondNum));
+equalButton.addEventListener('click', () => {
+    operate(calculation);
+    display(calculation);
+    displayPastResults();
+});
 
-const dotButton = document.querySelector("#dot");
 dotButton.addEventListener('click', addDot);
 
-const clearButton = document.querySelector("#clear_all");
 clearButton.addEventListener('click', () => {
-    firstNum = "";
-    secondNum = "";
-    operator = "";
+    calculation["numStack"] = [];
+    calculation["operator"] = "";
     clearDisplay();
+})
+
+const changeSign = function(calculation){
+    // if numStack is empty, no point in changing sign as there is no number
+    if(!calculation["numStack"].length){
+        return;
+    }
+
+    const lastIndex = calculation["numStack"].length - 1;
+    if(calculation["numStack"][lastIndex].includes('-')){
+        calculation["numStack"][lastIndex] = calculation["numStack"][lastIndex].slice(1);
+    }
+    else{
+        calculation["numStack"][lastIndex] = "-" + calculation["numStack"][lastIndex];
+    }
+}
+
+changeSignButton.addEventListener('click', () => {
+    changeSign(calculation);
+    display(calculation);
 })

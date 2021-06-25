@@ -45,11 +45,31 @@ body{
 
 #screen{
     background-color: cadetblue;
+    display: grid;
     height: 30vh;
     width: auto;
     margin-bottom: 20px;
     box-shadow: 2px 2px;
-    align-items: flex-end;
+    
+    grid-template-columns: 98vw;
+    grid-template-rows: 24vh 6vh;
+    grid-template-areas:
+    "past_results"
+    "result";
+    
+    justify-items: end;
+    font-size: 40px;
+}
+
+#past_results_screen{
+    grid-area: past_results;
+    display: flex;
+    flex-direction: column-reverse;
+    /* text-align: justify; */
+}
+
+#screen_result{
+    grid-area: result;
 }
 
 /*first row*/
