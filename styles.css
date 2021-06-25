@@ -65,7 +65,7 @@ body{
     grid-area: past_results;
     display: flex;
     flex-direction: column-reverse;
-    /* text-align: justify; */
+    text-align: right;
 }
 
 #screen_result{
