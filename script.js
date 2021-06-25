@@ -34,18 +34,20 @@ const operate = function (){
         result = firstNum * secondNum;
     }
     else if (operator === "/"){
-        if (secondNum == 0){
+        if (secondNum === 0){
             result = NaN;
         }
         else{
             result = firstNum / secondNum;
         }
     }
-    // store old calculation
-    if (!(result === NaN)){
+
+    // store previous calculation
+    if (!(isNaN(result))){
         // only store valid calculation
         calculation['result'] = result.toString();
         results.push(JSON.parse(JSON.stringify(calculation)));
+        
     }
 
     // reset calcuation with first number as the previous result
@@ -66,11 +68,8 @@ const displayPastResults = function (){
         pastResultsScreen.removeChild(pastResultsScreen.lastChild);
         results.splice(0, 1);
     }
-    
-    pastResultsScreen.insertBefore(result, pastResultsScreen.firstChild);
-    
-    
 
+    pastResultsScreen.insertBefore(result, pastResultsScreen.firstChild);
 }
 const display = function (){
     if (calculation['numStack'][0] === NaN.toString()){
@@ -119,22 +118,38 @@ const addDot = function() {
 }
 
 
-const inputNumber = function(e) {
+const changeSign = function(calculation){
+    // if numStack is empty, no point in changing sign as there is no number
+    if(!calculation["numStack"].length){
+        return;
+    }
+
+    const lastIndex = calculation["numStack"].length - 1;
+    if(calculation["numStack"][lastIndex].includes('-')){
+        calculation["numStack"][lastIndex] = calculation["numStack"][lastIndex].slice(1);
+    }
+    else{
+        calculation["numStack"][lastIndex] = "-" + calculation["numStack"][lastIndex];
+    }
+}
+
+
+const inputNumber = function(digit) {
     // if stack is empty, create a number
     if (!calculation["numStack"].length){
-        calculation["numStack"].push(e.target.textContent);
+        calculation["numStack"].push(digit);
     }
     else{
         const lastIndex = calculation["numStack"].length - 1;
-        calculation["numStack"][lastIndex] += e.target.textContent;
+        calculation["numStack"][lastIndex] += digit;
     }
 
     display(calculation);
 }
 
-const inputOperator = function(e){
+const inputOperator = function(operator){
     if (calculation["numStack"].length){
-        calculation["operator"] = e.target.textContent;
+        calculation["operator"] = operator;
         calculation["numStack"].push("");
     }
 
@@ -142,11 +157,11 @@ const inputOperator = function(e){
 }
 
 numButtons.forEach((button) => {
-    button.addEventListener('click', (e) => inputNumber(e));
+    button.addEventListener('click', (e) => inputNumber(e.target.textContent));
 });
 
 operatorButtons.forEach((button) => {
-    button.addEventListener('click', e => inputOperator(e));
+    button.addEventListener('click', e => inputOperator(e.target.textContent));
 });
 
 equalButton.addEventListener('click', () => {
@@ -163,22 +178,23 @@ clearButton.addEventListener('click', () => {
     clearDisplay();
 })
 
-const changeSign = function(calculation){
-    // if numStack is empty, no point in changing sign as there is no number
-    if(!calculation["numStack"].length){
-        return;
-    }
-
-    const lastIndex = calculation["numStack"].length - 1;
-    if(calculation["numStack"][lastIndex].includes('-')){
-        calculation["numStack"][lastIndex] = calculation["numStack"][lastIndex].slice(1);
-    }
-    else{
-        calculation["numStack"][lastIndex] = "-" + calculation["numStack"][lastIndex];
-    }
-}
-
 changeSignButton.addEventListener('click', () => {
     changeSign(calculation);
     display(calculation);
+})
+
+window.addEventListener('keydown', e => {
+    if (!isNaN(e.key)){
+        inputNumber(e.key);
+    }
+
+    else if (e.key === "+" || e.key === "-" || e.key === "*" || e.key === "/"){
+        inputOperator(e.key);
+    }
+
+    else if (e.key === "Enter"){
+        operate(calculation);
+        display(calculation);
+        displayPastResults();
+    }
 })
