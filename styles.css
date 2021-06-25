@@ -24,7 +24,10 @@ body{
     align-items: center;
     font-size: 30px;    
     box-shadow: 2px 2px;
+}
 
+.calc_button:active{
+    background-color: rgb(187, 177, 177);
 }
 
 .operator{
